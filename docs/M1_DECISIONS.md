@@ -73,21 +73,28 @@ Phonetic annotation colors stay in `src/styles/sharedCss.ts` and are unchanged. 
 
 Comment and research-marker marks may carry `id` plus `body` or `label`. The mark range is the reference to the source text. They are excluded from the phonetic annotation registry, so they do not appear as coaching buttons.
 
-## Legacy behavior left unresolved
+## Legacy behavior
 
 See `docs/UALBERTA_PARITY.md`.
 
-- Connect's coaching definition is only "highlight the selection."
-- The vowel button `Ɛə` uses U+0190, not U+025B. Phase 3 stores that sequence and does not replace it.
-- Stretch and Reduce are letter-spacing changes in the legacy app. Draw and Erase are canvas tools and are excluded.
+The client confirmed these coaching meanings on 2026-10-02. The mark visuals were not changed.
+
+- Link is Consonant to Vowel: the final consonant of one word moves onto the beginning vowel of the next. Examples: "Hold on" → "Hol don"; "Stop it" → "Staw pit".
+- Glide is Vowel to Vowel: a slight /w/ or /y/ joins a vowel ending to a vowel beginning. Examples: "Go out" → "Go wout"; "See it" → "See yit".
+- Connect is Consonant to Consonant: identical or similar consonants may be held and flow into the next word. Examples: "Gas station" as one /s/; "Bad dog" as a slightly longer /d/. The glossary also describes Connect as continuous vocal or air flow across word boundaries in a thought group, using links, glides, and blends.
+- Blend is Assimilation: the end of one word and the start of the next merge into a new sound. Examples: "Don't you" → "Don-cha"; "Did you" → "Di-ja".
+- Stretch is intentional lengthening of stressed vowels in content words. The control remains bold plus wider letter spacing.
+- Reduce is weakening unstressed syllables and function words, commonly toward /ə/ or /ɪ/. Examples: "for" → /fər/; "to" → /tə/; "can" → /kən/. The control remains tighter letter spacing.
+- Draw is outside M1. The client explicitly said Draw was not in the M1 requirements. That statement named Draw. Erase stays excluded with the freehand canvas workflow, as previously documented; the same statement did not separately name Erase. Neither tool is implemented.
+- The vowel button `Ɛə` still uses U+0190, not U+025B. That inventory question is still open.
 
 ## Phase 2 markup
 
 The left panel and the selection menu both call `toggleAnnotationOnSelection`. There is one registry. A button applies a mark, and the same button removes only that mark. Other marks on the same text stay. Empty selections do nothing. The menu appears only while a range is selected, sits above the selection, and does not stay on screen after the selection is cleared.
 
-Connect is the legacy `#fee9ab` highlight. No coaching definition was added.
+Connect is the legacy `#fee9ab` highlight. The confirmed coaching meaning is Consonant to Consonant, recorded in `docs/UALBERTA_PARITY.md`. The highlight itself was not changed.
 
-Stretch is bold plus wider letter spacing. Reduce is tighter letter spacing. The legacy values were `8px` and `-2px`. Phase 2 stores the amount in `--annotation-stretch-spacing` and `--annotation-reduce-spacing` as `em`, so the spacing stays with the text when the font size changes. The values are not a claim that `0.28em` equals exactly 8 pixels.
+Stretch is bold plus wider letter spacing. Reduce is tighter letter spacing. Those visuals stay. The confirmed meanings are vowel lengthening on stressed content words, and weakening of unstressed syllables and function words. The legacy spacing values were `8px` and `-2px`. Phase 2 stores the amount in `--annotation-stretch-spacing` and `--annotation-reduce-spacing` as `em`, so the spacing stays with the text when the font size changes. The values are not a claim that `0.28em` equals exactly 8 pixels.
 
 Overlapping marks stay nested spans. Backgrounds are translucent so a highlight underneath can still show. Each type also keeps its own cue: underline, overline, dotted border, wavy or double underline, letter spacing, or strike-through. When Stretch and Reduce cover the same characters, both marks remain stored, and the inner span’s letter spacing is the one you see. This presentation is provisional.
 

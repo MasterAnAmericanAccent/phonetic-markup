@@ -223,7 +223,7 @@ The new editor is intended to reimplement and extend the current UAlberta applic
 - Legacy bugs do not need to be preserved for behavioral parity.
 
 ### Engineer Notes
-A feature-by-feature audit of the live UAlberta editor should define the final parity checklist.
+The parity checklist is `docs/UALBERTA_PARITY.md`. On 2026-10-02 the client confirmed the coaching meanings for Link, Glide, Connect, Blend, Stretch, and Reduce. Draw is explicitly outside M1. Erase stays excluded with the freehand canvas workflow. The mark visuals were not changed for this confirmation.
 
 ---
 

@@ -67,15 +67,19 @@ Export PNG downloads `phonetic-markup.png` from that same document. The preferre
 
 ## Provisional and client confirmation
 
-These stay as implemented until Bianca or William decides otherwise:
+Confirmed, with the existing visuals left in place:
 
-- The client supplied the 2025 Honeybee palette, and those colors are now in the application shell. The header uses the supplied lockup (`src/assets/brand-logo.svg`) with the label PHONETIC MARKUP. The browser icon is the speech-bubble mark (`src/assets/acb-logo.svg`). Exports do not include those assets.
+- Alternative: blue dotted underline, stored as `alternate`, displayed as Alternative. It marks an acceptable pronunciation or realization that differs from the primary target. It is not an error.
+- Link, Glide, Connect, Blend, Stretch, and Reduce: coaching meanings are in `docs/UALBERTA_PARITY.md`.
+- Draw is outside M1. The client explicitly said Draw was not in the M1 requirements. That statement named Draw. Erase remains excluded from the freehand canvas workflow as previously documented; the same statement did not separately name Erase. Neither tool is implemented.
+
+Still open, and left as currently implemented:
+
 - Error, Voicing, and Nasal colors. These annotation colors were not changed when the shell palette was applied.
-- Alternative is confirmed: blue dotted underline, stored as `alternate`, displayed as Alternative. It marks an acceptable pronunciation or realization that differs from the primary target. It is not an error.
-- Connect’s coaching meaning.
-- Whether Stretch and Reduce need a meaning beyond letter-spacing.
 - Whether vowel `Ɛə` should stay U+0190 + U+0259 or become U+025B + U+0259.
+
+The application shell uses the supplied lockup (`src/assets/brand-logo.svg`) with the label PHONETIC MARKUP, and the speech-bubble mark (`src/assets/acb-logo.svg`) as the browser icon. Exports do not include those assets. Recording these requirement decisions is not a claim that the client has approved the delivered milestone as a whole.
 
 ## Not in Milestone 1
 
-Database persistence, login, saved history, Discord, member management, sessions, hot-seat roulette, timers, recording, comments UI, research-marker UI, Coach Notes, Chat, Dictionary, Apply Markup to All, Replace All, Apply One vs All, custom markup keyboard shortcuts, and hold-key interaction.
+Database persistence, login, saved history, Discord, member management, sessions, hot-seat roulette, timers, recording, comments UI, research-marker UI, Coach Notes, Chat, Dictionary, Apply Markup to All, Replace All, Apply One vs All, custom markup keyboard shortcuts, hold-key interaction, Draw, and Erase. Draw is an explicit client exclusion from M1. Erase stays out with that canvas workflow.
