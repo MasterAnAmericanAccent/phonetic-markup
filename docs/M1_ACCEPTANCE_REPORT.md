@@ -1,6 +1,6 @@
 # M1 automated acceptance report
 
-**Date:** 2026-10-01  
+**Date:** 2026-10-04  
 **Source of truth:** `docs/M1_REQUIREMENTS.md` (30 requirements). The broader backlog was not tested.  
 **Production behavior was not changed to make a test pass.**
 
