@@ -39,6 +39,7 @@ const vowelCharacters = [
   // Legacy button. U+0190, not U+025B. Do not "correct" this here.
   '\u0190\u0259',
   '\u025A',
+  '\u01E3',
 ] as const
 
 const consonantCharacters = [
@@ -86,7 +87,7 @@ function codePointsOf(character: string): string[] {
   return points
 }
 
-function entry(category: IpaCategoryId, character: string, label?: string): IpaSymbol {
+export function createIpaSymbol(category: IpaCategoryId, character: string, label?: string): IpaSymbol {
   const codePoints = codePointsOf(character)
   return {
     id: `${category}-${codePoints.join('-')}`,
@@ -98,9 +99,9 @@ function entry(category: IpaCategoryId, character: string, label?: string): IpaS
 }
 
 export const ipaSymbols: readonly IpaSymbol[] = [
-  ...vowelCharacters.map((character) => entry('vowel', character)),
-  ...consonantCharacters.map((character) => entry('consonant', character)),
-  ...intonationCharacters.map((item) => entry('intonation', item.character, item.label)),
+  ...vowelCharacters.map((character) => createIpaSymbol('vowel', character)),
+  ...consonantCharacters.map((character) => createIpaSymbol('consonant', character)),
+  ...intonationCharacters.map((item) => createIpaSymbol('intonation', item.character, item.label)),
 ]
 
 export function symbolsInCategory(category: IpaCategoryId): readonly IpaSymbol[] {

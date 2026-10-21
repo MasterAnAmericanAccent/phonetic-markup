@@ -659,3 +659,40 @@ body {
     border-bottom: 1px solid var(--brand-line-strong);
   }
 }
+
+/* Compact custom IPA controls reuse the palette's existing brand tokens. */
+.ipa-add {
+  border: 1px solid var(--brand-line-strong);
+  border-radius: 8px;
+  background: var(--brand-control);
+  color: var(--brand-text);
+  font: inherit;
+  font-size: 11px;
+  padding: 4px 6px;
+  cursor: pointer;
+}
+.ipa-manage-actions { display: flex; gap: 4px; margin-top: 6px; }
+.ipa-removal-mode { margin-top: 6px; font-size: 11px; }
+.ipa-removal-mode > .ipa-custom-actions { align-items: center; }
+.ipa-removal-confirm p { margin: 6px 0; }
+.ipa-add:disabled, .ipa-symbol:disabled { opacity: 0.5; cursor: not-allowed; }
+.ipa-add:disabled:hover, .ipa-symbol:disabled:hover { background: var(--brand-control); color: var(--brand-text); }
+.ipa-add:hover { background: var(--brand-primary-hover); color: var(--brand-on-hover); }
+.ipa-add:focus-visible { outline: 2px solid var(--brand-focus); outline-offset: 1px; }
+.ipa-storage-note, .ipa-custom-message { margin: 6px 0; font-size: 11px; line-height: 1.4; color: var(--brand-text); }
+.ipa-custom-form { display: grid; gap: 6px; margin-top: 6px; font-size: 11px; }
+.ipa-custom-form label { display: grid; gap: 3px; }
+.ipa-custom-form input, .ipa-custom-form select {
+  box-sizing: border-box;
+  width: 100%; min-width: 0;
+  border: 1px solid var(--brand-line-strong);
+  border-radius: 6px;
+  background: var(--brand-control);
+  color: var(--brand-text);
+  padding: 5px;
+  font: inherit;
+}
+.ipa-custom-actions { display: flex; gap: 6px; }
+.ipa-custom-list { display: grid; gap: 4px; }
+.ipa-custom-list > div { display: flex; align-items: center; justify-content: space-between; gap: 4px; }
+.ipa-custom-list span { overflow-wrap: anywhere; min-width: 0; }

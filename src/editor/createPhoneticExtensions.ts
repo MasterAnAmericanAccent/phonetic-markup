@@ -1,3 +1,4 @@
+import { IpaOffset } from '../ipa/IpaOffset'
 import Blockquote from '@tiptap/extension-blockquote'
 import Bold from '@tiptap/extension-bold'
 import BulletList from '@tiptap/extension-bullet-list'
@@ -84,6 +85,7 @@ export function createPhoneticExtensions() {
       defaultAlignment: null,
     }),
     History,
+    IpaOffset,
     ...annotationMarks,
     CommentMark,
     ResearchMarkerMark,

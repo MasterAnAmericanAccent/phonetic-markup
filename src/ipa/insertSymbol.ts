@@ -32,16 +32,16 @@ function positionOutsideGrapheme(doc: ProseNode, pos: number): number {
   return pos
 }
 
-/**
- * Insert a symbol through the editor. A collapsed cursor snaps out of a
- * combining sequence. A non-empty selection is replaced, the same as typing.
- */
+/** Insert after the selection, matching the reference, without replacing its text. */
 export function insertSymbolAtSelection(editor: Editor, character: string): boolean {
   if (character.length === 0) return false
-  const { from, empty } = editor.state.selection
-  if (!empty) {
-    return editor.chain().focus().insertContent(character).run()
-  }
-  const insertAt = positionOutsideGrapheme(editor.state.doc, from)
-  return editor.chain().focus().setTextSelection(insertAt).insertContent(character).run()
+  const insertAt = positionOutsideGrapheme(editor.state.doc, editor.state.selection.to)
+  return editor.chain().focus().setTextSelection(insertAt).command(({ tr, state }) => {
+    const marks = (tr.storedMarks ?? tr.selection.$from.marks())
+      .filter((mark) => mark.type.name !== 'ipaOffset')
+    tr.insertText(character, insertAt)
+    tr.addMark(insertAt, insertAt + character.length, state.schema.marks.ipaOffset!.create())
+    tr.setStoredMarks(marks)
+    return true
+  }).run()
 }

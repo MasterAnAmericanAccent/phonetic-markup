@@ -27,7 +27,7 @@ export function SelectionMenu({ editor }: SelectionMenuProps) {
       editor={editor}
       className="selection-menu"
       shouldShow={({ editor: current }) => selectionMenuShouldShow(current)}
-      options={{ placement: 'bottom', offset: 8, flip: true, shift: true }}
+      options={{ placement: 'top', offset: 10, flip: { padding: 8 }, shift: { padding: 8 }, hide: { strategy: 'referenceHidden' } }}
     >
       <div className="selection-menu-grid" role="toolbar" aria-label="Markup for the selection">
         {definitions.map((definition) => (

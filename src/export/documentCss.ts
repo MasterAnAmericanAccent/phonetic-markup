@@ -1,9 +1,6 @@
 import { brandTokens } from '../branding/brand'
 import { annotationCss, tokensCss } from '../styles/sharedCss'
 
-/** Readable column. Independent of the coach's current window width. */
-export const EXPORT_WIDTH_PX = 760
-
 /**
  * Document-only CSS. Annotation rules and tokens are the same files the editor loads.
  * The shell below is export-specific so the file does not need the application stylesheet.
@@ -18,15 +15,16 @@ html, body {
 }
 .document {
   box-sizing: border-box;
-  width: ${EXPORT_WIDTH_PX}px;
+  width: 100%;
   margin: 0;
   padding: 1.5rem 1.75rem 2rem;
   background: var(--surface);
   color: var(--text);
-  font-family: "Segoe UI", sans-serif;
+  font-family: Georgia, "Palatino Linotype", Palatino, "Times New Roman", serif;
   font-size: var(--editor-font-size);
   line-height: var(--editor-line-height);
   overflow-wrap: break-word;
+  white-space: pre-wrap;
 }
 .document p,
 .document h1,

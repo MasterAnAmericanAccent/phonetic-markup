@@ -17,7 +17,7 @@ export function resolvePngScale(width: number, height: number): number {
     throw new ExportError('This passage is too long to export as one PNG.')
   }
   if (width * PNG_PIXEL_RATIO > PNG_MAX_DIMENSION || height * PNG_PIXEL_RATIO > PNG_MAX_DIMENSION) return 1
-  return PNG_PIXEL_RATIO
+  return Math.min(Math.max(PNG_PIXEL_RATIO, window.devicePixelRatio || 1), PNG_MAX_DIMENSION / Math.max(width, height))
 }
 
 export function exportErrorMessage(error: unknown, format: 'PNG' | 'HTML'): string {
@@ -41,13 +41,14 @@ export async function renderDocumentPng(html: string): Promise<Blob> {
   style.textContent = documentExportCss()
   const host = document.createElement('div')
   host.setAttribute('aria-hidden', 'true')
-  host.style.cssText = 'position:fixed;left:-10000px;top:0;pointer-events:none;'
+  host.style.cssText = `position:fixed;left:-10000px;top:0;width:${document.documentElement.clientWidth}px;pointer-events:none;`
   host.append(article)
   document.head.append(style)
   document.body.append(host)
   try {
+    await document.fonts?.ready
     const width = Math.ceil(article.getBoundingClientRect().width)
-    const height = Math.ceil(article.scrollHeight)
+    const height = Math.ceil(Math.max(article.scrollHeight, article.getBoundingClientRect().height))
     if (width < 1 || height < 1) throw new ExportError('Could not render the document for PNG export.')
     const ratio = resolvePngScale(width, height)
     return await paintDocument(article, width, height, ratio)
@@ -64,10 +65,18 @@ async function paintDocument(article: HTMLElement, width: number, height: number
       scale: ratio,
       width,
       height,
-      windowWidth: width,
+      windowWidth: window.innerWidth,
       windowHeight: height,
       logging: false,
+      // html2canvas paints ancestor decorations before descendant backgrounds.
+      // Paint phonetic strokes last so nested highlights cannot hide them.
+      onclone: (cloned) => {
+        cloned.querySelectorAll<HTMLElement>(strokeSelector).forEach(element => {
+          element.style.textDecoration = 'none'
+        })
+      },
     })
+    paintAnnotationStrokes(canvas, article, ratio)
     const blob = await new Promise<Blob | null>((resolve) => {
       canvas.toBlob(resolve, 'image/png')
     })
@@ -77,4 +86,56 @@ async function paintDocument(article: HTMLElement, width: number, height: number
     if (error instanceof ExportError) throw error
     throw new ExportError('Could not render the document for PNG export.')
   }
+}
+
+const strokeSelector = ['voicing', 'nasal', 'glide', 'link', 'blend', 'stress']
+  .map(key => `[data-annotation="${key}"]`).join(',')
+
+/** Use live font metrics and inline fragments; never draw across a wrapped line. */
+function paintAnnotationStrokes(canvas: HTMLCanvasElement, article: HTMLElement, ratio: number) {
+  const context = canvas.getContext('2d')
+  if (!context) throw new ExportError('Could not render the document for PNG export.')
+  const origin = article.getBoundingClientRect()
+  context.save()
+  context.resetTransform()
+  context.scale(ratio, ratio)
+  article.querySelectorAll<HTMLElement>(strokeSelector).forEach(element => {
+    const style = getComputedStyle(element)
+    const key = element.dataset.annotation
+    context.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`
+    const metrics = context.measureText('Mg')
+    const ascent = metrics.fontBoundingBoxAscent
+    const offset = parseFloat(style.textUnderlineOffset) || 0
+    context.strokeStyle = style.textDecorationColor
+    context.lineWidth = parseFloat(style.textDecorationThickness) || 1
+    context.setLineDash(key === 'blend' ? [4, 3] : [])
+    // Text ranges omit an annotation's padding/border, giving the font's own box.
+    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT)
+    let text = walker.nextNode()
+    while (text) {
+      const range = document.createRange()
+      range.selectNodeContents(text)
+      for (const rect of range.getClientRects()) {
+        if (rect.width === 0) continue
+        const left = rect.left - origin.left
+        const right = rect.right - origin.left
+        const y = key === 'nasal' ? rect.top - origin.top : rect.top - origin.top + ascent + offset
+        context.beginPath()
+        if (key === 'glide') {
+          context.moveTo(left, y)
+          for (let x = left; x <= right; x += 1) context.lineTo(x, y + Math.sin((x - left) * Math.PI / 4) * 1.5)
+        } else {
+          context.moveTo(left, y)
+          context.lineTo(right, y)
+          if (key === 'link') {
+            context.moveTo(left, y + 3)
+            context.lineTo(right, y + 3)
+          }
+        }
+        context.stroke()
+      }
+      text = walker.nextNode()
+    }
+  })
+  context.restore()
 }

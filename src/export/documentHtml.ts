@@ -27,6 +27,7 @@ function renderInlineNode(node: JSONContent): string {
 }
 
 function wrapOneMark(inner: string, mark: { type?: string }): string {
+  if (mark.type === 'ipaOffset') return `<span data-ipa-offset>${inner}</span>`
   if (mark.type === 'bold') return `<strong>${inner}</strong>`
   if (mark.type === 'italic') return `<em>${inner}</em>`
   if (mark.type === 'underline') return `<u>${inner}</u>`
@@ -50,7 +51,7 @@ function alignmentStyle(node: JSONContent): string {
 }
 
 function renderBlocks(nodes: JSONContent[] | undefined): string {
-  return (nodes ?? []).map((node) => renderBlock(node)).join('\n')
+  return (nodes ?? []).map((node) => renderBlock(node)).join('')
 }
 
 function renderBlock(node: JSONContent): string {
@@ -59,18 +60,18 @@ function renderBlock(node: JSONContent): string {
     return `<h${level}${alignmentStyle(node)}>${renderInline(node.content)}</h${level}>`
   }
   if (node.type === 'blockquote') {
-    return `<blockquote${alignmentStyle(node)}>\n${renderBlocks(node.content)}\n</blockquote>`
+    return `<blockquote${alignmentStyle(node)}>${renderBlocks(node.content)}</blockquote>`
   }
-  if (node.type === 'bulletList') return `<ul>\n${renderBlocks(node.content)}\n</ul>`
-  if (node.type === 'orderedList') return `<ol>\n${renderBlocks(node.content)}\n</ol>`
-  if (node.type === 'listItem') return `<li>\n${renderBlocks(node.content)}\n</li>`
+  if (node.type === 'bulletList') return `<ul>${renderBlocks(node.content)}</ul>`
+  if (node.type === 'orderedList') return `<ol>${renderBlocks(node.content)}</ol>`
+  if (node.type === 'listItem') return `<li>${renderBlocks(node.content)}</li>`
   return `<p${alignmentStyle(node)}>${renderInline(node.content)}</p>`
 }
 
 /** Standalone annotated document. Search decorations and application UI are not in this tree. */
-export function renderDocumentHtml(content: JSONContent): string {
-  const blocks = (content.content ?? []).map((node) => renderBlock(node)).join('\n')
-  return `<!DOCTYPE html>
+export function renderDocumentHtml(content: JSONContent, source?: HTMLElement): string {
+  const blocks = (content.content ?? []).map((node) => renderBlock(node)).join('')
+  const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -80,10 +81,36 @@ ${documentExportCss()}
 </style>
 </head>
 <body>
-<article class="document">
-${blocks}
-</article>
+<article class="document">${blocks}</article>
 </body>
 </html>
 `
+  if (!source) return html
+  const parsed = new DOMParser().parseFromString(html, 'text/html')
+  const article = parsed.querySelector<HTMLElement>('.document')!
+  copyLayout(source, article)
+  for (const tag of ['p', 'h1', 'h2', 'h3', 'ul', 'ol', 'li', 'blockquote']) {
+    const originals = source.querySelectorAll<HTMLElement>(tag)
+    article.querySelectorAll<HTMLElement>(tag).forEach((element, index) => {
+      if (originals[index]) copyLayout(originals[index], element)
+    })
+  }
+  article.style.minHeight = '0'
+  article.style.height = 'auto'
+  article.style.overflow = 'visible'
+  article.style.margin = '0'
+  return '<!DOCTYPE html>\n' + parsed.documentElement.outerHTML
+}
+
+/** Capture used CSS pixels (before device scaling), including the live box model. */
+function copyLayout(source: HTMLElement, target: HTMLElement) {
+  const style = getComputedStyle(source)
+  for (const property of [
+    'box-sizing', 'width', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left',
+    'border-top', 'border-right', 'border-bottom', 'border-left',
+    'margin-top', 'margin-right', 'margin-bottom', 'margin-left',
+    'font-family', 'font-size', 'font-weight', 'font-style', 'line-height',
+    'letter-spacing', 'word-spacing', 'white-space', 'overflow-wrap', 'word-break',
+    'text-align', 'text-indent', 'color', 'background-color', 'list-style-type',
+  ]) target.style.setProperty(property, style.getPropertyValue(property))
 }

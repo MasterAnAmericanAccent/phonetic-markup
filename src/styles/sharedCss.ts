@@ -24,7 +24,13 @@ export const tokensCss = `:root {
 `
 
 /** Annotation rules. Same string for the editor and for PNG/HTML export. */
-export const annotationCss = `[data-annotation] {
+export const annotationCss = `[data-ipa-offset] {
+  vertical-align: super;
+  font-size: 150%;
+  line-height: 0;
+}
+
+[data-annotation] {
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
 }
@@ -49,6 +55,7 @@ export const annotationCss = `[data-annotation] {
 
 .annotation-alternate {
   border-bottom: 2px dotted var(--annotation-alternate);
+  padding-bottom: 0.3em;
 }
 
 .annotation-connect {
@@ -59,21 +66,21 @@ export const annotationCss = `[data-annotation] {
   background: var(--annotation-glide);
   text-decoration: underline wavy;
   text-decoration-color: #0f766e;
-  text-underline-offset: 0.22em;
+  text-underline-offset: 0.55em;
 }
 
 .annotation-link {
   background: var(--annotation-link);
   text-decoration: underline double;
   text-decoration-color: #3f6212;
-  text-underline-offset: 0.2em;
+  text-underline-offset: 0.7em;
 }
 
 .annotation-blend {
   background: var(--annotation-blend);
   text-decoration: underline dashed;
   text-decoration-color: #9f1239;
-  text-underline-offset: 0.16em;
+  text-underline-offset: 0.85em;
 }
 
 .annotation-stretch {

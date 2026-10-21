@@ -1,6 +1,6 @@
 import { useState, type MouseEvent } from 'react'
 import type { Editor } from '@tiptap/core'
-import { downloadBlob, HTML_EXPORT_FILENAME, PNG_EXPORT_FILENAME } from './download'
+import { downloadBlob, htmlExportFilename, pngExportFilename } from './download'
 import { renderDocumentHtml } from './documentHtml'
 import { exportErrorMessage, renderDocumentPng } from './renderPng'
 
@@ -36,12 +36,13 @@ export function ExportActions({ editor }: ExportActionsProps) {
 
   async function exportPng() {
     if (pngBusy) return
+    const filename = pngExportFilename()
     setPngBusy(true)
     setMessage('')
     const content = editor.getJSON()
     try {
-      const blob = await renderDocumentPng(renderDocumentHtml(content))
-      downloadBlob(blob, PNG_EXPORT_FILENAME)
+      const blob = await renderDocumentPng(renderDocumentHtml(content, editor.view.dom))
+      downloadBlob(blob, filename)
     } catch (error) {
       setMessage(exportErrorMessage(error, 'PNG'))
     } finally {
@@ -50,11 +51,12 @@ export function ExportActions({ editor }: ExportActionsProps) {
   }
 
   function exportHtml() {
+    const filename = htmlExportFilename()
     setMessage('')
     const content = editor.getJSON()
     try {
-      const html = renderDocumentHtml(content)
-      downloadBlob(new Blob([html], { type: 'text/html;charset=utf-8' }), HTML_EXPORT_FILENAME)
+      const html = renderDocumentHtml(content, editor.view.dom)
+      downloadBlob(new Blob([html], { type: 'text/html;charset=utf-8' }), filename)
     } catch (error) {
       setMessage(exportErrorMessage(error, 'HTML'))
     }
