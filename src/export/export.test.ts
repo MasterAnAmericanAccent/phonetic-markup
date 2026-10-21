@@ -4,7 +4,7 @@ import { getPlainText } from '../document/plainText'
 import { annotationDefinitions } from '../editor/annotations/definitions'
 import { createTestEditor, findTextRange, markedSegments, plainText } from '../editor/testSupport'
 import { getSearchState, setSearchQuery } from '../search/searchExtension'
-import { documentExportCss, EXPORT_WIDTH_PX } from './documentCss'
+import { documentExportCss } from './documentCss'
 import { renderDocumentHtml } from './documentHtml'
 import { ExportError, exportErrorMessage, PNG_MAX_DIMENSION, renderDocumentPng, resolvePngScale } from './renderPng'
 
@@ -37,7 +37,7 @@ describe('HTML export', () => {
     expect(html).toContain('<style>')
     expect(html).toContain('annotation-error')
     expect(html).toContain('--annotation-error-bg')
-    expect(html).toContain(`width: ${EXPORT_WIDTH_PX}px`)
+    expect(html).toContain('width: 100%')
     expect(html).not.toContain('<link')
     expect(html).not.toContain('<script')
     expect(html).not.toContain('localhost')
@@ -146,12 +146,12 @@ describe('HTML export', () => {
 })
 
 describe('PNG export', () => {
-  it('uses a fixed document width and refuses to crop an oversized passage', () => {
-    expect(documentExportCss()).toContain(`width: ${EXPORT_WIDTH_PX}px`)
+  it('uses a fluid fallback width and refuses to crop an oversized passage', () => {
+    expect(documentExportCss()).toContain('width: 100%')
     expect(documentExportCss()).not.toContain('100vw')
-    expect(resolvePngScale(EXPORT_WIDTH_PX, 4000)).toBe(2)
-    expect(resolvePngScale(EXPORT_WIDTH_PX, 9000)).toBe(1)
-    expect(() => resolvePngScale(EXPORT_WIDTH_PX, PNG_MAX_DIMENSION + 1)).toThrow(ExportError)
+    expect(resolvePngScale(800, 4000)).toBe(2)
+    expect(resolvePngScale(800, 9000)).toBe(1)
+    expect(() => resolvePngScale(800, PNG_MAX_DIMENSION + 1)).toThrow(ExportError)
   })
 
   it('turns unexpected failures into a short message and keeps known limits readable', () => {

@@ -41,6 +41,7 @@ describe('IPA inventory', () => {
       'a\u028Aw',
       '\u0190\u0259',
       '\u025A',
+      '\u01E3',
     ])
     expect(symbolsInCategory('consonant').map((symbol) => symbol.character)).toContain(flap)
     expect(symbolsInCategory('intonation').map((symbol) => symbol.character)).toEqual([
@@ -128,11 +129,11 @@ describe('IPA insertion', () => {
     editor.destroy()
   })
 
-  it('replaces a non-empty selection with the symbol', () => {
+  it('inserts after a non-empty selection without replacing it', () => {
     const editor = createTestEditor('<p>cat</p>')
     editor.commands.setTextSelection(findTextRange(editor, 'at'))
     insertSymbolAtSelection(editor, schwa)
-    expect(plainText(editor)).toBe(`c${schwa}`)
+    expect(plainText(editor)).toBe(`cat${schwa}`)
     expect(editor.state.selection.empty).toBe(true)
     editor.destroy()
   })
@@ -233,5 +234,27 @@ describe('Unicode IPA', () => {
     insertSymbolAtSelection(editor, 'z')
     expect(plainText(editor)).toBe(`${combining}z`)
     editor.destroy()
+  })
+})
+
+describe('approved U+01E3 vowel', () => {
+  for (const position of [5, 14]) it(`inserts ǣ at cursor ${position} with offset, Unicode export and history`, () => {
+    const editor = createTestEditor('<p>Say this now.</p>')
+    editor.commands.setTextSelection(position)
+    insertSymbolAtSelection(editor, '\u01E3')
+    const expected = 'Say this now.'.slice(0, position - 1) + '\u01E3' + 'Say this now.'.slice(position - 1)
+    expect(editor.state.doc.textContent).toBe(expected)
+    expect(cursor(editor)).toBe(position + 1)
+    expect(markedSegments(editor, 'ipaOffset')).toEqual(['\u01E3'])
+    editor.commands.undo()
+    expect(editor.state.doc.textContent).toBe('Say this now.')
+    editor.commands.redo()
+    expect(editor.state.doc.textContent).toBe(expected)
+    editor.commands.insertContent('!')
+    expect(markedSegments(editor, 'ipaOffset')).toEqual(['\u01E3'])
+    const restored = createTestEditor(editor.getHTML())
+    expect(restored.state.doc.textContent).toBe(editor.state.doc.textContent)
+    expect(markedSegments(restored, 'ipaOffset')).toEqual(['\u01E3'])
+    editor.destroy(); restored.destroy()
   })
 })

@@ -84,7 +84,7 @@ describe('rich text formatting', () => {
     editor.destroy()
   })
 
-  it('clears standard formatting and leaves phonetic annotations', () => {
+  it('clears all formatting and phonetic annotations', () => {
     const editor = createTestEditor('<p>pronunciation</p>')
     const range = findTextRange(editor, 'pronunciation')
     editor
@@ -108,8 +108,8 @@ describe('rich text formatting', () => {
     expect(editor.isActive('underline')).toBe(false)
     expect(editor.isActive('textStrike')).toBe(false)
     expect(editor.isActive({ textAlign: 'right' })).toBe(false)
-    expect(markedSegments(editor, 'error')).toEqual(['pronunciation'])
-    expect(markedSegments(editor, 'strike')).toEqual(['pronunciation'])
+    expect(markedSegments(editor, 'error')).toEqual([])
+    expect(markedSegments(editor, 'strike')).toEqual([])
     editor.destroy()
   })
 
@@ -338,7 +338,7 @@ describe('formatting scope', () => {
     restored.destroy()
   })
 
-  it('clears standard formatting on the selected block and leaves phonetic marks', () => {
+  it('clears formatting across all blocks regardless of selection', () => {
     const editor = createTestEditor(sample)
     editor.chain().focus().setTextSelection(findTextRange(editor, 'American')).toggleBold().applyAnnotation('error').run()
     editor.chain().focus().setHeading({ level: 1 }).setTextAlign('justify').run()
@@ -348,8 +348,8 @@ describe('formatting scope', () => {
     clearStandardFormatting(editor)
 
     expect(markedSegments(editor, 'bold')).toEqual([])
-    expect(markedSegments(editor, 'error')).toEqual(['American'])
-    expect(markedSegments(editor, 'italic')).toEqual(['second'])
+    expect(markedSegments(editor, 'error')).toEqual([])
+    expect(markedSegments(editor, 'italic')).toEqual([])
     expect(blockSummary(editor)[0]?.startsWith('paragraph')).toBe(true)
     expect(blockSummary(editor)[0]).not.toContain('justify')
     expect(blockSummary(editor)[1]).toBe('paragraph:')
