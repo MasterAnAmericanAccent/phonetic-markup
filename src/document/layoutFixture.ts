@@ -1,7 +1,7 @@
 import type { JSONContent } from '@tiptap/core'
 
 /**
- * Unsaved example passage. A few ordinary words contain IPA characters.
+ * Unsaved example passage. IPA insertions carry the same mark as palette insertions.
  */
 export const layoutFixture: JSONContent = {
   type: 'doc',
@@ -52,7 +52,7 @@ export const layoutFixture: JSONContent = {
         {
           type: 'text',
           text: '\u028A',
-          marks: [{ type: 'connect' }],
+          marks: [{ type: 'ipaOffset' }, { type: 'connect' }],
         },
         {
           type: 'text',
@@ -61,6 +61,7 @@ export const layoutFixture: JSONContent = {
         {
           type: 'text',
           text: '\u028C',
+          marks: [{ type: 'ipaOffset' }],
         },
         {
           type: 'text',
@@ -74,6 +75,7 @@ export const layoutFixture: JSONContent = {
         {
           type: 'text',
           text: '\u026A',
+          marks: [{ type: 'ipaOffset' }],
         },
         {
           type: 'text',
@@ -82,10 +84,20 @@ export const layoutFixture: JSONContent = {
         {
           type: 'text',
           text: '\u0259',
+          marks: [{ type: 'ipaOffset' }],
         },
         {
           type: 'text',
-          text: 'r context. Combining marks stay with their base, as in a\u0301 and \u0259.',
+          text: 'r context. Combining marks stay with their base, as in a\u0301 and ',
+        },
+        {
+          type: 'text',
+          text: '\u0259',
+          marks: [{ type: 'ipaOffset' }],
+        },
+        {
+          type: 'text',
+          text: '.',
         },
       ],
     },
